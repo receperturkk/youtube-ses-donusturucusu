@@ -1,13 +1,16 @@
 import tkinter as tk
 from tkinter import *
-from pytube import YouTube
-from pytube import Playlist
+from pytube import YouTube,Playlist
+from tkinter import ttk
+import urllib.request as urllib 
+from PIL import ImageTk, Image
+import os
 
 
 pencere = tk.Tk()
 pencere.geometry("900x600")
 pencere.title("github: receperturkk")
-canvas = Canvas(pencere, width=1000, height=1000,background="light blue")
+canvas = Canvas(pencere, width=900, height=600,background="light blue")
 canvas.pack()
 
 
@@ -34,7 +37,7 @@ def playlist():
     urlGiris.place(x=75 ,y=275)
 
     urlArama = Button(pencere)
-    urlArama.config(text="Bul",font=("Arial",12),foreground="white",width=10,bg="gray",command=pBul)
+    urlArama.config(text="🔎 Bul",font=("Arial",12),foreground="white",width=10,bg="gray",command=pBul)
     urlArama.place(x=750 ,y=273)
 
 def tek():
@@ -59,7 +62,7 @@ def tek():
     urlGiris.place(x=75 ,y=275)
 
     urlArama = Button(pencere)
-    urlArama.config(text="Bul",font=("Arial",12),foreground="white",width=10,bg="gray",command=bul)
+    urlArama.config(text="🔎 Bul",font=("Arial",12),foreground="white",width=10,bg="gray",command=bul)
     urlArama.place(x=750 ,y=273)
 
     
@@ -73,21 +76,33 @@ def bul():
 
     url = str(urlGiris.get())
     yt = YouTube(url)
+    print(yt.thumbnail_url)
+    print(yt.video_id)
     müzikBaslik =  yt.title
     müzikTitle = Label(pencere)
     müzikTitle.config(text="VİDEO DETAYLARI ",font=("Arial",20),fg="black",bg="light blue")
     müzikTitle.place(x=330,y=120)
+    print(yt.video_id)
+
+    s = urllib.urlretrieve(f"https://i.ytimg.com/vi/{yt.video_id}/sddefault.jpg", "kapak.jpg")
+
+    img = Image.open("kapak.jpg")
+    resized_img = img.resize((464, 261))
+    pencere.photoimg = ImageTk.PhotoImage(resized_img)
+    labelimage = tk.Label(pencere, image=pencere.photoimg).place(x=200,y=200)  
+
 
     canvas.delete("all")
     canvas.create_text(430,500,font=("Arial",15),text=müzikBaslik)
 
     indir = Button(pencere)
-    indir.config(text="İNDİR",font=("Arial",12),fg="white",bg="gray",command=tekİndir,width=10)
+    indir.config(text="⤓ İNDİR ⤓",font=("Arial",12),fg="white",bg="gray",command=tekIndir,width=10)
     indir.place(x=750 , y=550)
 
 
 def pBul():
     global p
+    canvas.delete("all")
     baslik1.place(x=120 , y=10)
     urlBaslik.place(x=10 , y=60)
     urlGiris.place(x=75 , y=65)
@@ -100,30 +115,35 @@ def pBul():
     playlistTitle.config(text="PLAYLİST DETAYLARI ",font=("Arial",20),fg="black",bg="light blue")
     playlistTitle.place(x=300,y=120)
 
-    k = 0
-    for x in p.video_urls:
-        print(x)
-        k = k+10
-        y = YouTube(x)
-        print(y.title)
-        canvas.create_text(50,200+k,font=("Arial",15),text=x)
+    playlistTitle1 = Label(pencere)
+    playlistTitle1.config(text=p.title,font=("Arial",20),fg="black",bg="light blue")
+    playlistTitle1.place(x=130,y=160)
+    
+    point = len(p.video_urls)-1
 
-    #canvas.delete("all")
-    #canvas.create_text(430,500,font=("Arial",15),text=playlistBaslik)
+    k = 0
+    for url in p.video_urls[:10]:
+        yt = YouTube(url)
+        x = yt.title
+        canvas.create_text(450,220+k,font=("Arial",15),text=x)
+        k = k + 20
 
     indir = Button(pencere)
-    indir.config(text="İNDİR",font=("Arial",12),fg="white",bg="gray",command=playlistİndir,width=10)
+    indir.config(text="⤓ İNDİR ⤓",font=("Arial",12),fg="white",bg="gray",command=playlistIndir,width=10)
     indir.place(x=750 , y=550)
 
 
 
-def tekİndir():
+def tekIndir():
+    link = str(urlGiris.get())
+    ya = YouTube(link)
+    stream = ya.streams.get_audio_only()
+    stream.download()
 
 
     urlGiris.delete(0,150)
 
-def playlistİndir():
-
+def playlistIndir():
     
     urlGiris.delete(0,150)
 
