@@ -144,7 +144,10 @@ def tekIndir():
     urlGiris.delete(0,150)
 
 def playlistIndir():
-    
+    link = str(urlGiris.get())
+    ya= YouTube(link)
+    stream = ya.streams.get_audio_only()
+    stream.download()
     urlGiris.delete(0,150)
 
 
